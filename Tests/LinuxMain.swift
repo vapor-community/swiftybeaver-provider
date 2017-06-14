@@ -9,11 +9,10 @@
 #if os(Linux)
 
 import XCTest
-@testable import AppExampleTests
+@testable import SwiftyBeaverProviderTests
 
 XCTMain([
-    // AppExampleTests
-    testCase(RouteTests.allTests)
+    testCase(VaporSwiftyBeaverTests.allTests)
 ])
 
 #endif
