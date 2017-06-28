@@ -24,7 +24,7 @@ public final class SwiftyBeaverLogger: LogProtocol {
     }
 
     public func log(_ level: LogLevel, message: String, file: String, function: String, line: Int) {
-        if LogLevel.all.contains(level) {
+        if enabled.contains(level) {
             // log to SwiftyBeaver
             sb.custom(level: level.sbStyle, message: message, file: file, function: function, line: line)
         }
