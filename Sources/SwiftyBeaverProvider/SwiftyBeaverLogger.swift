@@ -40,7 +40,11 @@ extension SwiftyBeaverLogger: ConfigInitializable {
         var destinations = [BaseDestination]()
 
         if swiftybeaver["console"]?.bool != nil {
-            destinations.append(ConsoleDestination())
+            let console = ConsoleDestination()
+            if let format = swiftybeaver["console_format"]?.string {
+                console.format = format
+            }
+            destinations.append(console)
         }
 
         if let path = swiftybeaver["file"]?.string {
@@ -49,6 +53,9 @@ extension SwiftyBeaverLogger: ConfigInitializable {
             }
 
             let file = FileDestination()  // log to file
+            if let format = swiftybeaver["file_format"]?.string {
+                file.format = format
+            }
             file.logFileURL = URL(fileURLWithPath: path) // set log file
             destinations.append(file)
         }
