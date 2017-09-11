@@ -63,7 +63,11 @@ private func configureCommonsProperties<T>(_ destination: T, using config: JSON)
         destination.format = format
     }
 
-    if let async: Bool = try config.get("async") {
+    if let a = config["async"] {
+        guard let async = a.bool else {
+            throw ConfigError.unsupported(value: a.string ?? "-", key: ["async"], file: configFileName)
+        }
+
         destination.asynchronously = async
     }
 
