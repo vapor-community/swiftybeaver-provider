@@ -12,7 +12,7 @@ import XCTest
 @testable import SwiftyBeaverProviderTests
 
 XCTMain([
-    testCase(VaporSwiftyBeaverTests.allTests)
+    testCase(SwiftyBeaverProviderTests.allTests)
 ])
 
 #endif
