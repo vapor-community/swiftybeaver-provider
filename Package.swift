@@ -1,16 +1,17 @@
+// swift-tools-version:4.0
 import PackageDescription
 
 let package = Package(
     name: "SwiftyBeaverProvider",
-    dependencies: [
-        .Package(url: "https://github.com/vapor/vapor.git", majorVersion: 2),
-        .Package(url: "https://github.com/SwiftyBeaver/SwiftyBeaver.git", majorVersion: 1)
+    products: [
+        .library(name: "SwiftyBeaverProvider", targets: ["SwiftyBeaverProvider"])
     ],
-    exclude: [
-        "Config",
-        "Database",
-        "Localization",
-        "Public",
-        "Resources"
+    dependencies: [
+        .package(url: "https://github.com/vapor/vapor.git", from: "2.0.0"),
+        .package(url: "https://github.com/SwiftyBeaver/SwiftyBeaver.git", .upToNextMajor(from: "1.4.0"))
+    ],
+    targets: [
+        .target(name: "SwiftyBeaverProvider", dependencies: ["SwiftyBeaver", "Vapor"]),
+        .testTarget(name: "SwiftyBeaverProviderTests", dependencies: ["SwiftyBeaverProvider"])
     ]
 )

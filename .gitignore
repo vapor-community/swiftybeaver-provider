@@ -15,3 +15,5 @@ DerivedData/
 # End of https://www.gitignore.io/api/vapor
 
 Package.pins
+Package.resolved
+.vscode
