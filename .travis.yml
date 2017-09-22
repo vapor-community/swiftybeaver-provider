@@ -27,4 +27,4 @@ script:
     - swift test
 
 after_success:
-    - eval "$(curl -sL https://swift.vapor.sh/codecov)"
+    - ./ci/codecov

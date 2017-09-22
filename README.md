@@ -6,7 +6,7 @@
         <img src="https://img.shields.io/badge/SwiftyBeaver-1.x-blue.svg" alt="SwiftyBeaver">
     </a>
     <a href="LICENSE">
-        <img src="http://img.shields.io/badge/license-MIT-brightgreen.svg" alt="MIT License">
+        <img src="https://img.shields.io/badge/license-MIT-brightgreen.svg" alt="MIT License">
     </a>
     <a href="https://circleci.com/gh/vapor-community/swiftybeaver-provider">
         <img src="https://circleci.com/gh/vapor-community/swiftybeaver-provider.svg?style=shield" alt="Continuous Integration">
@@ -14,8 +14,11 @@
     <a href="https://travis-ci.org/vapor-community/swiftybeaver-provider">
     	<img src="https://travis-ci.org/vapor-community/swiftybeaver-provider.svg?branch=master" alt="Build Status">
     </a>
+    <a href="https://codecov.io/gh/vapor-community/swiftybeaver-provider">
+        <img src="https://codecov.io/gh/vapor-community/swiftybeaver-provider/branch/master/graph/badge.svg" alt="Codecov" />
+    </a>
     <a href="https://swift.org">
-        <img src="http://img.shields.io/badge/swift-3.1-brightgreen.svg" alt="Swift 3.1">
+        <img src="https://img.shields.io/badge/swift-3.1_4.0-brightgreen.svg" alt="Swift">
     </a>
 </center>
 
