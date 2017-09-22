@@ -12,7 +12,8 @@ import XCTest
 @testable import SwiftyBeaverProviderTests
 
 XCTMain([
-    testCase(SwiftyBeaverProviderTests.allTests)
+    testCase(SwiftyBeaverProviderTests.allTests),
+    testCase(ResolverTests.allTests)
 ])
 
 #endif
