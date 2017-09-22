@@ -2,24 +2,15 @@ language: generic
 
 matrix:
   include:
-    - os: linux
-      dist: trusty
-      sudo: required
     - os: osx
       osx_image: xcode8.3
     - os: osx
       osx_image: xcode9
       
 before_install:
-    - if [ $TRAVIS_OS_NAME == "osx" ]; then
-            brew tap vapor/tap;
-            brew update;
-            brew install vapor;
-        else
-            eval "$(curl -sL https://apt.vapor.sh)";
-            sudo apt-get install vapor;
-            sudo chmod -R a+rx /usr/;
-        fi
+    - brew tap vapor/tap;
+    - brew update;
+    - brew install vapor;
 
 script:
     - swift build
@@ -27,4 +18,4 @@ script:
     - swift test
 
 after_success:
-    - ./ci/codecov
+  - bash <(curl -s https://codecov.io/bash)
