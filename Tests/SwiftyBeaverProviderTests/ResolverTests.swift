@@ -9,6 +9,7 @@
 import XCTest
 import JSON
 import SwiftyBeaver
+import Vapor
 
 @testable import SwiftyBeaverProvider
 
@@ -79,7 +80,7 @@ class ResolverTests: XCTestCase {
             "minLevel": "info"
             ])
 
-        let platform = try resolver.resolvePlatformDestination(using: json)
+        let platform = try resolver.resolveSBPlatformDestination(using: json)
 
         XCTAssertNotNil(platform)
 
@@ -122,6 +123,64 @@ class ResolverTests: XCTestCase {
         try assertMinLevel(string: "   ERROR", expected: SwiftyBeaver.Level.error)
         try assertMinLevel(string: "ERROR   ", expected: SwiftyBeaver.Level.error)
         try assertMinLevel(string: " ErrOR   ", expected: SwiftyBeaver.Level.error)
+    }
+
+    func testInvalidThreshold() throws {
+        var json = JSON([
+            "app": "APP_ID",
+            "secret": "SECRET_ID",
+            "key": "ENCRYPTION_KEY",
+            "threshold": -1,
+            "minLevel": "info"
+            ])
+
+        XCTAssertThrowsError(try resolver.resolveSBPlatformDestination(using: json)) { error in
+            XCTAssertEqual(error as? SwiftyBeaverProviderError, SwiftyBeaverProviderError.thresholdOutOfRange)
+        }
+
+        try json.set("threshold", 1001)
+
+        XCTAssertThrowsError(try resolver.resolveSBPlatformDestination(using: json)) { error in
+            XCTAssertEqual(error as? SwiftyBeaverProviderError, SwiftyBeaverProviderError.thresholdOutOfRange)
+        }
+
+        try json.set("threshold", "abc")
+
+        XCTAssertThrowsError(try resolver.resolveSBPlatformDestination(using: json)) { error in
+            guard let e = error as? ConfigError else {
+                XCTFail()
+                return
+            }
+
+            XCTAssertEqual(e.description, ConfigError.unsupported(value: "abc", key: ["threshold"], file: CONFIG_FILE_NAME).description)
+        }
+    }
+
+    func testInvalidAsync() throws {
+        let json = JSON([
+            "type": "console",
+            "async": "not-bool"
+            ])
+
+        XCTAssertThrowsError(try resolver.resolveConsoleDestination(using: json)) { error in
+            guard let e = error as? ConfigError else {
+                XCTFail()
+                return
+            }
+
+            XCTAssertEqual(e.description, ConfigError.unsupported(value: "not-bool", key: ["async"], file: CONFIG_FILE_NAME).description)
+        }
+    }
+
+    func testInvalidMinLevel() throws {
+        let json = JSON([
+            "type": "console",
+            "minLevel": "not-min-level"
+            ])
+
+        XCTAssertThrowsError(try resolver.resolveConsoleDestination(using: json)) { error in
+            XCTAssertEqual(error as? SwiftyBeaverProviderError, SwiftyBeaverProviderError.invalidMinLevel)
+        }
     }
 
     // MARK: Helpers
@@ -187,6 +246,9 @@ extension ResolverTests {
         ("testResolveConsoleDestination", testResolveConsoleDestination),
         ("testResolveFileDestination", testResolveFileDestination),
         ("testResolveSBPlatformDestination", testResolveSBPlatformDestination),
-        ("testGetMinLevel", testGetMinLevelFromJSON)
+        ("testGetMinLevel", testGetMinLevelFromJSON),
+        ("testInvalidThreshold", testInvalidThreshold),
+        ("testInvalidAsync", testInvalidAsync),
+        ("testInvalidMinLevel", testInvalidMinLevel)
     ]
 }

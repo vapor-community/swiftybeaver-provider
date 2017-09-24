@@ -10,14 +10,21 @@ import SwiftyBeaver
 import Vapor
 import Foundation
 
-enum DestinationType: String {
+public enum SBPDestinationType: String {
     case console
     case file
     case platform
 }
 
-struct Resolver {
-    func resolveDestination(of type: DestinationType, using config: JSON) throws -> BaseDestination {
+public protocol ResolverProtocol {
+    func resolveDestination(of type: SBPDestinationType, using config: JSON) throws -> BaseDestination
+    func resolveConsoleDestination(using config: JSON) throws -> ConsoleDestination
+    func resolveFileDestination(using config: JSON) throws -> FileDestination
+    func resolveSBPlatformDestination(using config: JSON) throws -> SBPlatformDestination
+}
+
+extension ResolverProtocol {
+    func resolveDestination(of type: SBPDestinationType, using config: JSON) throws -> BaseDestination {
         let destination: BaseDestination
 
         switch type {
@@ -28,13 +35,15 @@ struct Resolver {
             destination = try resolveFileDestination(using: config)
 
         case .platform:
-            destination = try resolvePlatformDestination(using: config)
+            destination = try resolveSBPlatformDestination(using: config)
             break
         }
 
         return destination
     }
+}
 
+class Resolver: ResolverProtocol {
     func resolveConsoleDestination(using config: JSON) throws -> ConsoleDestination {
         let destination = ConsoleDestination()
         return try configureCommonsProperties(destination, using: config)
@@ -45,7 +54,7 @@ struct Resolver {
 
         if let path = config["path"]?.string {
             guard !path.trim().isEmpty else {
-                throw SwiftyBeaverProviderError.invalidPath
+                throw ConfigError.unsupported(value: path, key: ["path"], file: CONFIG_FILE_NAME)
             }
 
             let file = URL(fileURLWithPath: path)
@@ -55,28 +64,28 @@ struct Resolver {
         return try configureCommonsProperties(destination, using: config)
     }
 
-    func resolvePlatformDestination(using config: JSON) throws -> SBPlatformDestination {
+    func resolveSBPlatformDestination(using config: JSON) throws -> SBPlatformDestination {
         guard let app = config["app"]?.string, !app.trim().isEmpty else {
-            throw ConfigError.missing(key: ["app"], file: configFileName, desiredType: String.self)
+            throw ConfigError.missing(key: ["app"], file: CONFIG_FILE_NAME, desiredType: String.self)
         }
 
         guard let secret = config["secret"]?.string, !secret.trim().isEmpty else {
-            throw ConfigError.missing(key: ["secret"], file: configFileName, desiredType: String.self)
+            throw ConfigError.missing(key: ["secret"], file: CONFIG_FILE_NAME, desiredType: String.self)
         }
 
         guard let key = config["key"]?.string, !key.trim().isEmpty else {
-            throw ConfigError.missing(key: ["key"], file: configFileName, desiredType: String.self)
+            throw ConfigError.missing(key: ["key"], file: CONFIG_FILE_NAME, desiredType: String.self)
         }
 
         let destination = SBPlatformDestination(appID: app, appSecret: secret, encryptionKey: key)
 
         if let t = config["threshold"] {
             guard let threshold = t.int else {
-                throw ConfigError.unsupported(value: t.string ?? "-", key: ["threshold"], file: configFileName)
+                throw ConfigError.unsupported(value: t.string ?? "-", key: ["threshold"], file: CONFIG_FILE_NAME)
             }
 
             guard threshold >= 1 && threshold <= 1000  else {
-                throw ConfigError.unsupported(value: String(describing: threshold), key: ["threshold"], file: configFileName)
+                throw SwiftyBeaverProviderError.thresholdOutOfRange
             }
 
             destination.sendingPoints.threshold = threshold
@@ -96,7 +105,7 @@ struct Resolver {
 
         if let a = config["async"] {
             guard let async = a.bool else {
-                throw ConfigError.unsupported(value: a.string ?? "-", key: ["async"], file: configFileName)
+                throw ConfigError.unsupported(value: a.string ?? "-", key: ["async"], file: CONFIG_FILE_NAME)
             }
 
             destination.asynchronously = async

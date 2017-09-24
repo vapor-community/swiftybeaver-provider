@@ -10,9 +10,11 @@ import Vapor
 import SwiftyBeaver
 import Foundation
 
-let configFileName = "swiftybeaver"
+let CONFIG_FILE_NAME = "swiftybeaver"
 
 public final class SwiftyBeaverLogger: LogProtocol {
+    public static var resolver: ResolverProtocol = Resolver()
+
     public var enabled: [LogLevel] = LogLevel.all
 
     private var sb: SwiftyBeaver.Type = SwiftyBeaver.self
@@ -31,12 +33,8 @@ public final class SwiftyBeaverLogger: LogProtocol {
 
 extension SwiftyBeaverLogger: ConfigInitializable {
     public convenience init(config: Config) throws {
-        guard let file = config[configFileName] else {
-            throw ConfigError.missingFile(configFileName)
-        }
-
-        guard file.array != nil else {
-            throw ConfigError.unsupported(value: "---", key: ["---"], file: configFileName)
+        guard let file = config[CONFIG_FILE_NAME] else {
+            throw ConfigError.missingFile(CONFIG_FILE_NAME)
         }
 
         guard let configs: [JSON] = try file.get() else {
@@ -44,20 +42,19 @@ extension SwiftyBeaverLogger: ConfigInitializable {
         }
 
         var destinations = [BaseDestination]()
-        let resolver = Resolver()
 
         for config in configs {
-            guard let type = DestinationType(rawValue: try config.get("type")) else {
-                throw SwiftyBeaverProviderError.invalidDestinationType
+            guard let type = SBPDestinationType(rawValue: try config.get("type")) else {
+                throw ConfigError.unspecified(SwiftyBeaverProviderError.invalidDestinationType)
             }
 
-            let destination = try resolver.resolveDestination(of: type, using: config)
+            let destination = try SwiftyBeaverLogger.resolver.resolveDestination(of: type, using: config)
 
             destinations.append(destination)
         }
 
         guard !destinations.isEmpty else {
-            throw SwiftyBeaverProviderError.missingDestinations
+            throw ConfigError.unspecified(SwiftyBeaverProviderError.missingDestinations)
         }
 
         self.init(destinations: destinations)
