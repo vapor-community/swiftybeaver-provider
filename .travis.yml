@@ -15,7 +15,8 @@ before_install:
 script:
     - swift build
     - swift build -c release
-    - swift test
+    - swift package generate-xcodeproj
+    - xcodebuild -scheme SwiftyBeaverProvider -enableCodeCoverage YES test | xcpretty  # instead of swift test
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
