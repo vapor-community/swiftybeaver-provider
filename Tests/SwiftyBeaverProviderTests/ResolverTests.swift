@@ -70,6 +70,17 @@ class ResolverTests: XCTestCase {
 
         try assertCommonProperties(file, destination, json)
     }
+    
+    func testInvalidFilePath() throws {
+        let json = JSON([
+            "type": "file",
+            "path": ""
+            ])
+        
+        try assertError(expectedError: ConfigError.unsupported(value: "", key: ["path"], file: CONFIG_FILE_NAME)) {
+            _ = try resolver.resolveFileDestination(using: json)
+        }
+    }
 
     func testResolveSBPlatformDestination() throws {
         let json = JSON([
@@ -125,7 +136,7 @@ class ResolverTests: XCTestCase {
         try assertMinLevel(string: " ErrOR   ", expected: SwiftyBeaver.Level.error)
     }
 
-    func testInvalidThreshold() throws {
+    func testInvalidSBPlatformThreshold() throws {
         var json = JSON([
             "app": "APP_ID",
             "secret": "SECRET_ID",
@@ -133,26 +144,57 @@ class ResolverTests: XCTestCase {
             "threshold": -1,
             "minLevel": "info"
             ])
-
-        XCTAssertThrowsError(try resolver.resolveSBPlatformDestination(using: json)) { error in
-            XCTAssertEqual(error as? SwiftyBeaverProviderError, SwiftyBeaverProviderError.thresholdOutOfRange)
+        
+        try assertError(expectedError: SwiftyBeaverProviderError.thresholdOutOfRange) {
+            _ = try resolver.resolveSBPlatformDestination(using: json)
         }
-
+        
         try json.set("threshold", 1001)
 
-        XCTAssertThrowsError(try resolver.resolveSBPlatformDestination(using: json)) { error in
-            XCTAssertEqual(error as? SwiftyBeaverProviderError, SwiftyBeaverProviderError.thresholdOutOfRange)
+        try assertError(expectedError: SwiftyBeaverProviderError.thresholdOutOfRange) {
+            _ = try resolver.resolveSBPlatformDestination(using: json)
         }
 
         try json.set("threshold", "abc")
-
-        XCTAssertThrowsError(try resolver.resolveSBPlatformDestination(using: json)) { error in
-            guard let e = error as? ConfigError else {
-                XCTFail()
-                return
-            }
-
-            XCTAssertEqual(e.description, ConfigError.unsupported(value: "abc", key: ["threshold"], file: CONFIG_FILE_NAME).description)
+        
+        try assertError(expectedError: ConfigError.unsupported(value: "abc", key: ["threshold"], file: CONFIG_FILE_NAME)) {
+            _ = try resolver.resolveSBPlatformDestination(using: json)
+        }
+    }
+    
+    func testInvalidSBPlatformApp() throws {
+        let json = JSON([
+            "app": "",
+            "secret": "SECRET_ID",
+            "key": "ENCRYPTION_KEY"
+            ])
+        
+        try assertError(expectedError: ConfigError.missing(key: ["app"], file: CONFIG_FILE_NAME, desiredType: String.self)) {
+            _ = try resolver.resolveSBPlatformDestination(using: json)
+        }
+    }
+    
+    func testInvalidSBPlatformSecret() throws {
+        let json = JSON([
+            "app": "APP_ID",
+            "secret": "",
+            "key": "ENCRYPTION_KEY"
+            ])
+        
+        try assertError(expectedError: ConfigError.missing(key: ["secret"], file: CONFIG_FILE_NAME, desiredType: String.self)) {
+            _ = try resolver.resolveSBPlatformDestination(using: json)
+        }
+    }
+    
+    func testInvalidSBPlatformKey() throws {
+        let json = JSON([
+            "app": "APP_ID",
+            "secret": "SECRET_ID",
+            "key": ""
+            ])
+        
+        try assertError(expectedError: ConfigError.missing(key: ["key"], file: CONFIG_FILE_NAME, desiredType: String.self)) {
+            _ = try resolver.resolveSBPlatformDestination(using: json)
         }
     }
 
@@ -162,13 +204,8 @@ class ResolverTests: XCTestCase {
             "async": "not-bool"
             ])
 
-        XCTAssertThrowsError(try resolver.resolveConsoleDestination(using: json)) { error in
-            guard let e = error as? ConfigError else {
-                XCTFail()
-                return
-            }
-
-            XCTAssertEqual(e.description, ConfigError.unsupported(value: "not-bool", key: ["async"], file: CONFIG_FILE_NAME).description)
+        try assertError(expectedError: ConfigError.unsupported(value: "not-bool", key: ["async"], file: CONFIG_FILE_NAME)) {
+            _ = try resolver.resolveConsoleDestination(using: json)
         }
     }
 
@@ -178,8 +215,8 @@ class ResolverTests: XCTestCase {
             "minLevel": "not-min-level"
             ])
 
-        XCTAssertThrowsError(try resolver.resolveConsoleDestination(using: json)) { error in
-            XCTAssertEqual(error as? SwiftyBeaverProviderError, SwiftyBeaverProviderError.invalidMinLevel)
+        try assertError(expectedError: SwiftyBeaverProviderError.invalidMinLevel) {
+            _ = try resolver.resolveConsoleDestination(using: json)
         }
     }
 
@@ -222,6 +259,23 @@ class ResolverTests: XCTestCase {
         XCTAssertNotEqual(defaultDestination.levelString.warning, destination.levelString.warning)
         XCTAssertEqual(destination.levelString.warning, json["levelString.warning"]?.string)
     }
+    
+    func assertError(expectedError: ConfigError, closure: () throws -> Void) throws {
+        XCTAssertThrowsError(try closure()) { error in
+            guard let e = error as? ConfigError else {
+                XCTFail()
+                return
+            }
+            
+            XCTAssertEqual(e.description, expectedError.description)
+        }
+    }
+    
+    func assertError(expectedError: SwiftyBeaverProviderError, closure: () throws -> Void) throws {
+        XCTAssertThrowsError(try closure()) { error in
+            XCTAssertEqual(error as? SwiftyBeaverProviderError, expectedError)
+        }
+    }
 }
 
 // MARK: Manifest
@@ -243,12 +297,21 @@ extension ResolverTests {
 
     static let allTests = [
         ("testLinuxTestSuiteIncludesAllTests", testLinuxTestSuiteIncludesAllTests),
+        // Console
         ("testResolveConsoleDestination", testResolveConsoleDestination),
+        // File
         ("testResolveFileDestination", testResolveFileDestination),
+        ("testInvalidFilePath", testInvalidFilePath),
+        // SBPlatform
         ("testResolveSBPlatformDestination", testResolveSBPlatformDestination),
+        ("testInvalidSBPlatformThreshold", testInvalidSBPlatformThreshold),
+        ("testInvalidSBPlatformApp", testInvalidSBPlatformApp),
+        ("testInvalidSBPlatformSecret", testInvalidSBPlatformSecret),
+        ("testInvalidSBPlatformKey", testInvalidSBPlatformKey),
+        // Others
         ("testGetMinLevel", testGetMinLevelFromJSON),
-        ("testInvalidThreshold", testInvalidThreshold),
+        // Commons
         ("testInvalidAsync", testInvalidAsync),
-        ("testInvalidMinLevel", testInvalidMinLevel)
+        ("testInvalidMinLevel", testInvalidMinLevel),
     ]
 }
