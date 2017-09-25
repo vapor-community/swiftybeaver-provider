@@ -58,7 +58,7 @@ class ResolverTests: XCTestCase {
                 "verbose": "V",
                 "warning": "W"
             ],
-            "minLevel": "warning"
+            "minLevel": "debug"
             ])
 
         let destination = try resolver.resolveFileDestination(using: json)

@@ -37,24 +37,24 @@ extension SwiftyBeaverLogger: ConfigInitializable {
             throw ConfigError.missingFile(CONFIG_FILE_NAME)
         }
 
-        guard let configs: [JSON] = try file.get() else {
-            throw ConfigError.unspecified(SwiftyBeaverProviderError.missingDestinations)
+        guard let configs = file.array else {
+            throw SwiftyBeaverProviderError.missingDestinations
         }
 
         var destinations = [BaseDestination]()
 
         for config in configs {
             guard let type = SBPDestinationType(rawValue: try config.get("type")) else {
-                throw ConfigError.unspecified(SwiftyBeaverProviderError.invalidDestinationType)
+                throw SwiftyBeaverProviderError.invalidDestinationType
             }
 
-            let destination = try SwiftyBeaverLogger.resolver.resolveDestination(of: type, using: config)
+            let destination = try SwiftyBeaverLogger.resolver.resolveDestination(of: type, using: JSON(config))
 
             destinations.append(destination)
         }
 
         guard !destinations.isEmpty else {
-            throw ConfigError.unspecified(SwiftyBeaverProviderError.missingDestinations)
+            throw SwiftyBeaverProviderError.missingDestinations
         }
 
         self.init(destinations: destinations)

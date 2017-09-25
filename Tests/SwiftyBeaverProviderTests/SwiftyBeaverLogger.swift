@@ -44,6 +44,55 @@ class SwiftyBeaverProviderTests: XCTestCase {
         try assertExecutedFunction("resolveSBPlatformDestination", on: resolver, using: ["type": "platform", "app": "xxxxxx", "secret": "yyyyyy", "key": "zzzzzz"])
     }
 
+    func testMissingFile() throws {
+        let config = try Config(node: [
+            "droplet": ["log": "swiftybeaver"]
+            ])
+
+        try assertError(config: config, expectedError: ConfigError.missingFile(CONFIG_FILE_NAME))
+    }
+
+    func testMissingDestinations() throws {
+        // No Array
+        var config = try Config(node: [
+            "droplet": ["log": "swiftybeaver"],
+            "swiftybeaver": ["foo": "bar"]
+            ])
+
+        try assertError(config: config, expectedError: SwiftyBeaverProviderError.missingDestinations)
+
+        // Empty
+        config = try Config(node: [
+            "droplet": ["log": "swiftybeaver"],
+            "swiftybeaver": []
+            ])
+
+        try assertError(config: config, expectedError: SwiftyBeaverProviderError.missingDestinations)
+    }
+
+    func testInvalidDestinationType() throws {
+        let destination = ["type": "_console"]
+
+        let config = try Config(node: [
+            "droplet": ["log": "swiftybeaver"],
+            "swiftybeaver": [destination]
+            ])
+
+        try assertError(config: config, expectedError: SwiftyBeaverProviderError.invalidDestinationType)
+    }
+
+    func testLogLevelExtension() throws {
+        XCTAssertEqual(LogLevel.custom("").sbStyle, SwiftyBeaver.Level.debug)
+        XCTAssertEqual(LogLevel.debug.sbStyle, SwiftyBeaver.Level.debug)
+        XCTAssertEqual(LogLevel.error.sbStyle, SwiftyBeaver.Level.error)
+        XCTAssertEqual(LogLevel.fatal.sbStyle, SwiftyBeaver.Level.error)
+        XCTAssertEqual(LogLevel.info.sbStyle, SwiftyBeaver.Level.info)
+        XCTAssertEqual(LogLevel.verbose.sbStyle, SwiftyBeaver.Level.verbose)
+        XCTAssertEqual(LogLevel.warning.sbStyle, SwiftyBeaver.Level.warning)
+    }
+
+    // MARK: Helpers
+
     func assertExecutedFunction(_ functionName: String, on resolver: FakeResolver, using destination: JSON) throws {
         let config = try Config(node: [
             "droplet": ["log": "swiftybeaver"],
@@ -55,6 +104,27 @@ class SwiftyBeaverProviderTests: XCTestCase {
 
         XCTAssertNotNil(drop)
         XCTAssertEqual(functionName, resolver.executed)
+    }
+
+    func assertError(config: Config, expectedError: ConfigError) throws {
+        try config.addProvider(Provider.self)
+
+        XCTAssertThrowsError(try Droplet(config)) { error in
+            guard let e = error as? ConfigError else {
+                XCTFail()
+                return
+            }
+
+            XCTAssertEqual(e.description, expectedError.description)
+        }
+    }
+
+    func assertError(config: Config, expectedError: SwiftyBeaverProviderError) throws {
+        try config.addProvider(Provider.self)
+
+        XCTAssertThrowsError(try Droplet(config)) { error in
+            XCTAssertEqual(error as? SwiftyBeaverProviderError, expectedError)
+        }
     }
 }
 
@@ -77,6 +147,10 @@ extension SwiftyBeaverProviderTests {
 
     static let allTests = [
         ("testLinuxTestSuiteIncludesAllTests", testLinuxTestSuiteIncludesAllTests),
-        ("testConfig", testConfig)
+        ("testConfig", testConfig),
+        ("testMissingFile", testMissingFile),
+        ("testMissingDestinations", testMissingDestinations),
+        ("testInvalidDestinationType", testInvalidDestinationType),
+        ("testLogLevelExtension", testLogLevelExtension)
     ]
 }
