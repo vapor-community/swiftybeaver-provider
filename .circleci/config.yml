@@ -28,8 +28,8 @@ jobs:
       xcode: "9.0"
     steps:
       - run: sudo gem install xcpretty
-      - run: brew tap vapor/tap
       - run: brew update
+      - run: brew tap vapor/tap
       - run: brew install ctls mysql
       - run: swift build
       - run: swift build -c release
@@ -42,8 +42,8 @@ jobs:
       xcode: "8.3.3"
     steps:
       - run: sudo gem install xcpretty
-      - run: brew tap vapor/tap
       - run: brew update
+      - run: brew tap vapor/tap
       - run: brew install ctls mysql
       - run: swift build
       - run: swift build -c release
