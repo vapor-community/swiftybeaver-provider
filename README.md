@@ -1,8 +1,7 @@
 [![Swift Version](https://img.shields.io/badge/Swift-3.1_--_4.0-brightgreen.svg)](https://swift.org)
 [![Vapor Version](https://img.shields.io/badge/Vapor-2-brightgreen.svg)](https://vapor.codes)
 [![SwiftyBeaver Version](https://img.shields.io/badge/SwiftyBeaver-1.x-brightgreen.svg)](https://github.com/SwiftyBeaver/SwiftyBeaver)
-[![Linux Build Status](https://img.shields.io/circleci/project/github/vapor-community/swiftybeaver-provider.svg?label=Linux)](https://circleci.com/gh/vapor-community/swiftybeaver-provider)
-[![macOS Build Status](https://img.shields.io/travis/vapor-community/swiftybeaver-provider.svg?label=macOS)](https://travis-ci.org/vapor-community/swiftybeaver-provider)
+[![Linux Build Status](https://img.shields.io/circleci/project/github/vapor-community/swiftybeaver-provider.svg?label=CI)](https://circleci.com/gh/vapor-community/swiftybeaver-provider)
 [![codecov](https://codecov.io/gh/vapor-community/swiftybeaver-provider/branch/master/graph/badge.svg)](https://codecov.io/gh/vapor-community/swiftybeaver-provider)
 [![GitHub license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 

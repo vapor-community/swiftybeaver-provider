@@ -23,7 +23,7 @@ jobs:
       - run: swift build -c release
       - run: swift test
 
-  macOS:
+  macOS-swift-4:
     macos:
       xcode: "9.0"
     steps:
@@ -37,9 +37,9 @@ jobs:
       - run: xcodebuild -scheme SwiftyBeaverProvider-Package -enableCodeCoverage YES test | xcpretty
       - run: bash <(curl -s https://codecov.io/bash)
 
-  macOS:
+  macOS-swift-3:
     macos:
-      xcode: "8.3"
+      xcode: "8.3.3"
     steps:
       - run: sudo gem install xcpretty
       - run: brew tap vapor/tap
