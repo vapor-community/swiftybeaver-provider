@@ -30,7 +30,7 @@ jobs:
       - run: sudo gem install xcpretty
       - run: brew update
       - run: brew tap vapor/tap
-      - run: brew install ctls mysql
+      - run: brew install ctls
       - checkout
       - run: swift build
       - run: swift build -c release
@@ -45,7 +45,7 @@ jobs:
       - run: sudo gem install xcpretty
       - run: brew update
       - run: brew tap vapor/tap
-      - run: brew install ctls mysql
+      - run: brew install ctls
       - checkout
       - run: swift build
       - run: swift build -c release
