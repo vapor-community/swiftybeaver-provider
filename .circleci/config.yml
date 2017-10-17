@@ -31,6 +31,7 @@ jobs:
       - run: brew update
       - run: brew tap vapor/tap
       - run: brew install ctls mysql
+      - checkout
       - run: swift build
       - run: swift build -c release
       - run: swift package generate-xcodeproj
@@ -45,6 +46,7 @@ jobs:
       - run: brew update
       - run: brew tap vapor/tap
       - run: brew install ctls mysql
+      - checkout
       - run: swift build
       - run: swift build -c release
       - run: swift package generate-xcodeproj
