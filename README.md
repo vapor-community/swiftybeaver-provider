@@ -67,7 +67,8 @@ Config/swiftybeaver.json
 ```json
 [
     {
-        "type": "console"
+        "type": "console",
+        "format": " $Dyyyy-MM-dd HH:mm:ss.SSS$d $C$L$c: $M"
     },
     {
         "type": "file"
@@ -86,6 +87,7 @@ Aditional options:
 | KEY   | AVAILABLE FOR | TYPE | OBSERVATION | 
 |-------|---------------|------|-------------|
 | async | console, file | Bool |             |
+| format | console, file | String | A space must be placed before dollar sign |
 | levelString.debug | console, file | String |   |
 | levelString.error | console, file | String |   |
 | levelString.info | console, file | String |   |
