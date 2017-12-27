@@ -70,13 +70,13 @@ class ResolverTests: XCTestCase {
 
         try assertCommonProperties(file, destination, json)
     }
-    
+
     func testInvalidFilePath() throws {
         let json = JSON([
             "type": "file",
             "path": ""
             ])
-        
+
         try assertError(expectedError: ConfigError.unsupported(value: "", key: ["path"], file: CONFIG_FILE_NAME)) {
             _ = try resolver.resolveFileDestination(using: json)
         }
@@ -144,11 +144,11 @@ class ResolverTests: XCTestCase {
             "threshold": -1,
             "minLevel": "info"
             ])
-        
+
         try assertError(expectedError: SwiftyBeaverProviderError.thresholdOutOfRange) {
             _ = try resolver.resolveSBPlatformDestination(using: json)
         }
-        
+
         try json.set("threshold", 1001)
 
         try assertError(expectedError: SwiftyBeaverProviderError.thresholdOutOfRange) {
@@ -156,43 +156,43 @@ class ResolverTests: XCTestCase {
         }
 
         try json.set("threshold", "abc")
-        
+
         try assertError(expectedError: ConfigError.unsupported(value: "abc", key: ["threshold"], file: CONFIG_FILE_NAME)) {
             _ = try resolver.resolveSBPlatformDestination(using: json)
         }
     }
-    
+
     func testInvalidSBPlatformApp() throws {
         let json = JSON([
             "app": "",
             "secret": "SECRET_ID",
             "key": "ENCRYPTION_KEY"
             ])
-        
+
         try assertError(expectedError: ConfigError.missing(key: ["app"], file: CONFIG_FILE_NAME, desiredType: String.self)) {
             _ = try resolver.resolveSBPlatformDestination(using: json)
         }
     }
-    
+
     func testInvalidSBPlatformSecret() throws {
         let json = JSON([
             "app": "APP_ID",
             "secret": "",
             "key": "ENCRYPTION_KEY"
             ])
-        
+
         try assertError(expectedError: ConfigError.missing(key: ["secret"], file: CONFIG_FILE_NAME, desiredType: String.self)) {
             _ = try resolver.resolveSBPlatformDestination(using: json)
         }
     }
-    
+
     func testInvalidSBPlatformKey() throws {
         let json = JSON([
             "app": "APP_ID",
             "secret": "SECRET_ID",
             "key": ""
             ])
-        
+
         try assertError(expectedError: ConfigError.missing(key: ["key"], file: CONFIG_FILE_NAME, desiredType: String.self)) {
             _ = try resolver.resolveSBPlatformDestination(using: json)
         }
@@ -259,18 +259,18 @@ class ResolverTests: XCTestCase {
         XCTAssertNotEqual(defaultDestination.levelString.warning, destination.levelString.warning)
         XCTAssertEqual(destination.levelString.warning, json["levelString.warning"]?.string)
     }
-    
+
     func assertError(expectedError: ConfigError, closure: () throws -> Void) throws {
         XCTAssertThrowsError(try closure()) { error in
             guard let e = error as? ConfigError else {
                 XCTFail()
                 return
             }
-            
+
             XCTAssertEqual(e.description, expectedError.description)
         }
     }
-    
+
     func assertError(expectedError: SwiftyBeaverProviderError, closure: () throws -> Void) throws {
         XCTAssertThrowsError(try closure()) { error in
             XCTAssertEqual(error as? SwiftyBeaverProviderError, expectedError)
@@ -312,6 +312,6 @@ extension ResolverTests {
         ("testGetMinLevel", testGetMinLevelFromJSON),
         // Commons
         ("testInvalidAsync", testInvalidAsync),
-        ("testInvalidMinLevel", testInvalidMinLevel),
+        ("testInvalidMinLevel", testInvalidMinLevel)
     ]
 }

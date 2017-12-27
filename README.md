@@ -1,27 +1,20 @@
-[![Swift Version](https://img.shields.io/badge/Swift-3.1_--_4.0-brightgreen.svg)](https://swift.org)
-[![Vapor Version](https://img.shields.io/badge/Vapor-2-brightgreen.svg)](https://vapor.codes)
-[![SwiftyBeaver Version](https://img.shields.io/badge/SwiftyBeaver-1.x-brightgreen.svg)](https://github.com/SwiftyBeaver/SwiftyBeaver)
-[![Linux Build Status](https://img.shields.io/circleci/project/github/vapor-community/swiftybeaver-provider.svg?label=CI)](https://circleci.com/gh/vapor-community/swiftybeaver-provider)
+[![Swift Version](https://img.shields.io/badge/Swift-4.0-brightgreen.svg)](https://swift.org)
+[![Vapor Version](https://img.shields.io/badge/Vapor-3-brightgreen.svg)](https://vapor.codes)
+[![SwiftyBeaver Version](https://img.shields.io/badge/SwiftyBeaver-1.5-brightgreen.svg)](https://github.com/SwiftyBeaver/SwiftyBeaver)
+[![Linux Build Status](https://img.shields.io/circleci/project/github/vapor-community/swiftybeaver-provider.svg)](https://circleci.com/gh/vapor-community/swiftybeaver-provider)
 [![codecov](https://codecov.io/gh/vapor-community/swiftybeaver-provider/branch/master/graph/badge.svg)](https://codecov.io/gh/vapor-community/swiftybeaver-provider)
 [![GitHub license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 
 # SwiftyBeaver Logging Provider for Vapor
 
-Adds the powerful logging of [SwiftyBeaver](https://github.com/SwiftyBeaver/SwiftyBeaver) to [Vapor](https://github.com/vapor/vapor) for server-side Swift 3 on Linux and Mac.
+Adds the powerful logging of [SwiftyBeaver](https://github.com/SwiftyBeaver/SwiftyBeaver) to [Vapor](https://github.com/vapor/vapor) for server-side Swift 4 on Linux and Mac.
 
 ## Installation
 
 Add this project to the `Package.swift` dependencies of your Vapor project:
 
 ```swift
-    .Package(url: ".git", majorVersion: 2),
-)
-```
-
-or for Swift 4:
-
-```swift
-  .package(url: "https://github.com/vapor-community/swiftybeaver-provider.git", .upToNextMajor(from: "2.0.0"))
+  .package(url: "https://github.com/vapor-community/swiftybeaver-provider.git", .upToNextMajor(from: "3.0.0"))
 ```
 
 ## Setup
