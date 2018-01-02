@@ -21,29 +21,26 @@ Add this project to the `Package.swift` dependencies of your Vapor project:
 
 After you've added the SwiftyBeaver Provider package to your project, setting the provider up in code is easy.
 
-### Add to Droplet
+### Service registration
 
-First, register the SwiftyBeaverProvider.Provider with your Droplet.
+First, register the SwiftyBeaverProvider in your `configure.swift' file.
 
 ```swift
-import Vapor
-import SwiftyBeaverProvider
-
-let drop = try Droplet()
-
-try drop.addProvider(SwiftyBeaverProvider.Provider.self)
-
-````
-
-### Configure Droplet
-
-Once the provider is added to your Droplet, you can configure it to use the SwiftyBeaver logger. Otherwise you still use the old console logger.
-
-Config/droplet.json
-
-```json
-{
-    "log": "swiftybeaver",
+public func configure(
+    _ config: inout Config,
+    _ env: inout Environment,
+    _ services: inout Services
+    ) throws {
+    // configure your application here
+    services.register(Logger.self) { container -> SwiftyBeaverLogger in
+        let dirConfig:DirectoryConfig = try container.make(for: DirectoryConfig.self)
+        // Locate the swiftybeaver.json
+        let data = FileManager.default.contents(atPath: "\(dirConfig.workDir)Config/swiftybeaver.json")!
+        
+        let destinations: [DestinationConfig] = try JSONDecoder().decode([DestinationConfig].self, from: data)
+        
+        return try SwiftyBeaverLogger(configs: destinations)
+    }
 }
 ```
 
@@ -101,20 +98,18 @@ To get more information about configuration options check the official [SwiftyBe
 ## Use
 
 ```swift
-drop.get("/") { request in
+// Get a logger instance
+let logger: Logger = try app.make(SwiftyBeaverLogger.self)
 
-    drop.log.verbose("not so important")
-    drop.log.debug("something to debug")
-    drop.log.info("a nice information")
-    drop.log.warning("oh no, that won’t be good")
-    drop.log.error("ouch, an error did occur!")
+...
 
-    return "welcome!"
+router.get("hello") { req -> Future<String> in
+    logger.info("Logger info")
+    return Future("Hello, world!")
 }
-
 ```
 
-The `Routes.swift` in the included App folder contains more details. Please also see the SwiftyBeaver [destination docs](http://docs.swiftybeaver.com/category/8-logging-destinations) and how to set a [custom logging format](http://docs.swiftybeaver.com/category/19-advanced-topics).
+Please also see the SwiftyBeaver [destination docs](http://docs.swiftybeaver.com/category/8-logging-destinations) and how to set a [custom logging format](http://docs.swiftybeaver.com/category/19-advanced-topics).
 <br/><br/>
 
 ## Output to Xcode 8 Console
