@@ -32,7 +32,7 @@ import XCTest
 //    }
 //}
 //
-//class SwiftyBeaverProviderTests: XCTestCase {
+class SwiftyBeaverProviderTests: XCTestCase {
 //    // MARK: - General
 //    func testConfig() throws {
 //        let resolver = FakeResolver()
@@ -91,7 +91,7 @@ import XCTest
 //        XCTAssertEqual(LogLevel.warning.sbStyle, SwiftyBeaver.Level.warning)
 //    }
 //
-    // MARK: Helpers
+// MARK: Helpers
 
 //    func assertExecutedFunction(_ functionName: String, on resolver: FakeResolver, using destination: JSON) throws {
 //        let config = try Config(node: [
@@ -126,31 +126,28 @@ import XCTest
 //            XCTAssertEqual(error as? SwiftyBeaverProviderError, expectedError)
 //        }
 //    }
-//}
+}
 
 // MARK: Manifest
 
-//extension SwiftyBeaverProviderTests {
-//    func testLinuxTestSuiteIncludesAllTests() throws {
-//        #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-//            let thisClass = type(of: self)
-//            let linuxCount = thisClass.allTests.count
-//            #if swift(>=4.0)
-//                let darwinCount = Int(thisClass.defaultTestSuite.testCaseCount)
-//            #else
-//                let darwinCount = Int(thisClass.defaultTestSuite().testCaseCount)
-//            #endif
-//
-//            XCTAssertEqual(linuxCount, darwinCount, "\(darwinCount - linuxCount) tests are missing from allTests")
-//        #endif
-//    }
-//
-//    static let allTests = [
-//        ("testLinuxTestSuiteIncludesAllTests", testLinuxTestSuiteIncludesAllTests),
+extension SwiftyBeaverProviderTests {
+    func testLinuxTestSuiteIncludesAllTests() throws {
+        #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+            let thisClass = type(of: self)
+            let linuxCount = thisClass.allTests.count
+            let darwinCount = Int(thisClass.defaultTestSuite.testCaseCount)
+            
+            XCTAssertEqual(linuxCount, darwinCount, "\(darwinCount - linuxCount) tests are missing from allTests")
+        #endif
+    }
+    
+    static let allTests = [
+        ("testLinuxTestSuiteIncludesAllTests", testLinuxTestSuiteIncludesAllTests),
 //        ("testConfig", testConfig),
 //        ("testMissingFile", testMissingFile),
 //        ("testMissingDestinations", testMissingDestinations),
 //        ("testInvalidDestinationType", testInvalidDestinationType),
 //        ("testLogLevelExtension", testLogLevelExtension)
-//    ]
-//}
+    ]
+}
+
