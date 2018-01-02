@@ -22,33 +22,33 @@ enum DestinationLevel: String, Codable {
 
 public struct DestinationConfig: Codable {
     let type: DestinationType
-    
+
     // Console - Commons
-    private(set) var async: Bool? = nil
-    private(set) var format: String? = nil
-    private(set) var minLevel: DestinationLevel? = nil
-    private(set) var levelString: LevelString? = nil
-    
+    private(set) var async: Bool?
+    private(set) var format: String?
+    private(set) var minLevel: DestinationLevel?
+    private(set) var levelString: LevelString?
+
     //  File
-    private(set) var path: String? = nil
-    
+    private(set) var path: String?
+
     // Platform
-    private(set) var app: String? = nil
-    private(set) var secret: String? = nil
-    private(set) var key: String? = nil
-    private(set) var threshold: Int? = nil
-    
+    private(set) var app: String?
+    private(set) var secret: String?
+    private(set) var key: String?
+    private(set) var threshold: Int?
+
     init(type: DestinationType, async: Bool? = nil, format: String? = nil, minLevel: DestinationLevel? = nil, levelString: LevelString? = nil) {
-        
+
         self.type = type
         self.async = async
         self.format = format
         self.minLevel = minLevel
         self.levelString = levelString
     }
-    
+
     init(type: DestinationType, async: Bool? = nil, format: String? = nil, minLevel: DestinationLevel? = nil, levelString: LevelString? = nil, path: String? = nil) {
-        
+
         self.type = type
         self.async = async
         self.format = format
@@ -56,7 +56,7 @@ public struct DestinationConfig: Codable {
         self.levelString = levelString
         self.path = path
     }
-    
+
     init(app: String?  = nil, secret: String? = nil, key: String? = nil, threshold: Int? = nil, minLevel: DestinationLevel? = nil) {
         self.type = .platform
         self.app = app
