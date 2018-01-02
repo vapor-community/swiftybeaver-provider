@@ -24,19 +24,47 @@ public struct DestinationConfig: Codable {
     let type: DestinationType
     
     // Console - Commons
-    let async: Bool?
-    let format: String?
-    let minLevel: DestinationLevel?
-    let levelString: LevelString?
+    private(set) var async: Bool? = nil
+    private(set) var format: String? = nil
+    private(set) var minLevel: DestinationLevel? = nil
+    private(set) var levelString: LevelString? = nil
     
     //  File
-    let path: String?
+    private(set) var path: String? = nil
     
     // Platform
-    let app: String?
-    let secret: String?
-    let key: String?
-    let threshold: Int?
+    private(set) var app: String? = nil
+    private(set) var secret: String? = nil
+    private(set) var key: String? = nil
+    private(set) var threshold: Int? = nil
+    
+    init(type: DestinationType, async: Bool? = nil, format: String? = nil, minLevel: DestinationLevel? = nil, levelString: LevelString? = nil) {
+        
+        self.type = type
+        self.async = async
+        self.format = format
+        self.minLevel = minLevel
+        self.levelString = levelString
+    }
+    
+    init(type: DestinationType, async: Bool? = nil, format: String? = nil, minLevel: DestinationLevel? = nil, levelString: LevelString? = nil, path: String? = nil) {
+        
+        self.type = type
+        self.async = async
+        self.format = format
+        self.minLevel = minLevel
+        self.levelString = levelString
+        self.path = path
+    }
+    
+    init(app: String?  = nil, secret: String? = nil, key: String? = nil, threshold: Int? = nil, minLevel: DestinationLevel? = nil) {
+        self.type = .platform
+        self.app = app
+        self.secret = secret
+        self.key = key
+        self.threshold = threshold
+        self.minLevel = minLevel
+    }
 }
 
 extension DestinationLevel {
