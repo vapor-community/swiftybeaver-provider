@@ -43,18 +43,17 @@ class ResolverTests: XCTestCase {
 
         try assertCommonProperties(file, destination, config)
     }
-    //
-    //    func testInvalidFilePath() throws {
-    //        let json = JSON([
-    //            "type": "file",
-    //            "path": ""
-    //            ])
-    //
-    //        try assertError(expectedError: ConfigError.unsupported(value: "", key: ["path"], file: CONFIG_FILE_NAME)) {
-    //            _ = try resolver.resolveFileDestination(using: json)
-    //        }
-    //    }
-    //
+
+    func testInvalidFilePath() throws {
+        let config = DestinationConfig(type: .file, async: nil, format: nil, minLevel: nil, levelString: nil, path: "")
+
+        XCTAssertThrowsError(try resolver.resolveFileDestination(from: config))
+
+        //            try assertError(expectedError: ConfigError.unsupported(value: "", key: ["path"], file: CONFIG_FILE_NAME)) {
+        //                _ = try resolver.resolveFileDestination(using: json)
+        //            }
+    }
+
     func testResolvePlatformDestination() throws {
         let config = DestinationConfig(app: "APP_ID", secret: "SECRET_ID", key: "ENCRYPTION_KEY", threshold: 500, minLevel: .info)
 
@@ -103,89 +102,52 @@ class ResolverTests: XCTestCase {
     //        try assertMinLevel(string: " ErrOR   ", expected: SwiftyBeaver.Level.error)
     //    }
     //
-    //    func testInvalidSBPlatformThreshold() throws {
-    //        var json = JSON([
-    //            "app": "APP_ID",
-    //            "secret": "SECRET_ID",
-    //            "key": "ENCRYPTION_KEY",
-    //            "threshold": -1,
-    //            "minLevel": "info"
-    //            ])
-    //
-    //        try assertError(expectedError: SwiftyBeaverProviderError.thresholdOutOfRange) {
-    //            _ = try resolver.resolveSBPlatformDestination(using: json)
-    //        }
-    //
-    //        try json.set("threshold", 1001)
-    //
-    //        try assertError(expectedError: SwiftyBeaverProviderError.thresholdOutOfRange) {
-    //            _ = try resolver.resolveSBPlatformDestination(using: json)
-    //        }
-    //
-    //        try json.set("threshold", "abc")
-    //
-    //        try assertError(expectedError: ConfigError.unsupported(value: "abc", key: ["threshold"], file: CONFIG_FILE_NAME)) {
-    //            _ = try resolver.resolveSBPlatformDestination(using: json)
-    //        }
-    //    }
-    //
-    //    func testInvalidSBPlatformApp() throws {
-    //        let json = JSON([
-    //            "app": "",
-    //            "secret": "SECRET_ID",
-    //            "key": "ENCRYPTION_KEY"
-    //            ])
-    //
-    //        try assertError(expectedError: ConfigError.missing(key: ["app"], file: CONFIG_FILE_NAME, desiredType: String.self)) {
-    //            _ = try resolver.resolveSBPlatformDestination(using: json)
-    //        }
-    //    }
-    //
-    //    func testInvalidSBPlatformSecret() throws {
-    //        let json = JSON([
-    //            "app": "APP_ID",
-    //            "secret": "",
-    //            "key": "ENCRYPTION_KEY"
-    //            ])
-    //
-    //        try assertError(expectedError: ConfigError.missing(key: ["secret"], file: CONFIG_FILE_NAME, desiredType: String.self)) {
-    //            _ = try resolver.resolveSBPlatformDestination(using: json)
-    //        }
-    //    }
-    //
-    //    func testInvalidSBPlatformKey() throws {
-    //        let json = JSON([
-    //            "app": "APP_ID",
-    //            "secret": "SECRET_ID",
-    //            "key": ""
-    //            ])
-    //
-    //        try assertError(expectedError: ConfigError.missing(key: ["key"], file: CONFIG_FILE_NAME, desiredType: String.self)) {
-    //            _ = try resolver.resolveSBPlatformDestination(using: json)
-    //        }
-    //    }
-    //
-    //    func testInvalidAsync() throws {
-    //        let json = JSON([
-    //            "type": "console",
-    //            "async": "not-bool"
-    //            ])
-    //
-    //        try assertError(expectedError: ConfigError.unsupported(value: "not-bool", key: ["async"], file: CONFIG_FILE_NAME)) {
-    //            _ = try resolver.resolveConsoleDestination(using: json)
-    //        }
-    //    }
-    //
-    //    func testInvalidMinLevel() throws {
-    //        let json = JSON([
-    //            "type": "console",
-    //            "minLevel": "not-min-level"
-    //            ])
-    //
-    //        try assertError(expectedError: SwiftyBeaverProviderError.invalidMinLevel) {
-    //            _ = try resolver.resolveConsoleDestination(using: json)
-    //        }
-    //    }
+    func testInvalidPlatformThreshold() throws {
+        var config = DestinationConfig(app: "APP_ID", secret: "SECRET_ID", key: "ENCRYPTION_KEY", threshold: -1, minLevel: .info)
+
+        XCTAssertThrowsError(try resolver.resolvePlatformDestination(from: config))
+
+        //            try assertError(expectedError: SwiftyBeaverProviderError.thresholdOutOfRange) {
+        //                _ = try resolver.resolvePlatformDestination(using: json)
+        //            }
+
+        config = DestinationConfig(app: "APP_ID", secret: "SECRET_ID", key: "ENCRYPTION_KEY", threshold: 1001, minLevel: .info)
+
+        XCTAssertThrowsError(try resolver.resolvePlatformDestination(from: config))
+        //            try assertError(expectedError: SwiftyBeaverProviderError.thresholdOutOfRange) {
+        //                _ = try resolver.resolvePlatformDestination(using: json)
+        //            }
+    }
+
+    func testInvalidPlatformApp() throws {
+        let config = DestinationConfig(app: "", secret: "SECRET_ID", key: "ENCRYPTION_KEY", threshold: nil)
+
+        XCTAssertThrowsError(try resolver.resolvePlatformDestination(from: config))
+
+        //            try assertError(expectedError: ConfigError.missing(key: ["app"], file: CONFIG_FILE_NAME, desiredType: String.self)) {
+        //                _ = try resolver.resolveSBPlatformDestination(using: json)
+        //            }
+    }
+
+    func testInvalidPlatformSecret() throws {
+        let config = DestinationConfig(app: "APP_ID", secret: "", key: "ENCRYPTION_KEY", threshold: nil)
+
+        XCTAssertThrowsError(try resolver.resolvePlatformDestination(from: config))
+        //            try assertError(expectedError: ConfigError.missing(key: ["secret"], file: CONFIG_FILE_NAME, desiredType: String.self)) {
+        //                _ = try resolver.resolveSBPlatformDestination(using: json)
+        //            }
+    }
+
+    func testInvalidPlatformKey() throws {
+        let config = DestinationConfig(app: "APP_ID", secret: "SECRETN", key: "", threshold: nil)
+
+        XCTAssertThrowsError(try resolver.resolvePlatformDestination(from: config))
+
+        //            try assertError(expectedError: ConfigError.missing(key: ["key"], file: CONFIG_FILE_NAME, desiredType: String.self)) {
+        //                _ = try resolver.resolveSBPlatformDestination(using: json)
+        //            }
+    }
+
     //
     //    // MARK: Helpers
     //    func assertMinLevel(string: String, expected: SwiftyBeaver.Level) throws {
@@ -264,17 +226,14 @@ extension ResolverTests {
         ("testResolveConsoleDestination", testResolveConsoleDestination),
         // File
         ("testResolveFileDestination", testResolveFileDestination),
-        //        ("testInvalidFilePath", testInvalidFilePath),
+        ("testInvalidFilePath", testInvalidFilePath),
         // SBPlatform
-        ("testResolvePlatformDestination", testResolvePlatformDestination)
-        //        ("testInvalidPlatformThreshold", testInvalidPlatformThreshold),
-        //        ("testInvalidSBPlatformApp", testInvalidSBPlatformApp),
-        //        ("testInvalidSBPlatformSecret", testInvalidSBPlatformSecret),
-        //        ("testInvalidSBPlatformKey", testInvalidSBPlatformKey),
+        ("testResolvePlatformDestination", testResolvePlatformDestination),
+        ("testInvalidPlatformThreshold", testInvalidPlatformThreshold),
+        ("testInvalidPlatformApp", testInvalidPlatformApp),
+        ("testInvalidPlatformSecret", testInvalidPlatformSecret),
+        ("testInvalidPlatformKey", testInvalidPlatformKey)
         //        // Others
         //        ("testGetMinLevel", testGetMinLevelFromJSON),
-        //        // Commons
-        //        ("testInvalidAsync", testInvalidAsync),
-        //        ("testInvalidMinLevel", testInvalidMinLevel)
     ]
 }
