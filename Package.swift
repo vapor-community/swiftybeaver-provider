@@ -7,7 +7,7 @@ let package = Package(
         .library(name: "SwiftyBeaverProvider", targets: ["SwiftyBeaverProvider"])
     ],
     dependencies: [
-        .package(url: "https://github.com/vapor/vapor.git", .branch("beta")),
+        .package(url: "https://github.com/vapor/vapor.git", .exact("3.0.0-beta.1")),
         .package(url: "https://github.com/SwiftyBeaver/SwiftyBeaver.git", .upToNextMajor(from: "1.5.0"))
     ],
     targets: [
