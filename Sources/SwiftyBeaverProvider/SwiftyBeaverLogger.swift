@@ -8,6 +8,7 @@
 
 import Logging
 import Foundation
+import Service
 @_exported import SwiftyBeaver
 
 public final class SwiftyBeaverLogger: Logger {
@@ -51,6 +52,8 @@ public final class SwiftyBeaverLogger: Logger {
         swiftybeaver.custom(level: level.style, message: string, file: file, function: function, line: Int(line))
     }
 }
+
+extension SwiftyBeaverLogger: Service { }
 
 extension LogLevel {
     var style: SwiftyBeaver.Level {

@@ -136,13 +136,13 @@ extension SwiftyBeaverProviderTests {
             let thisClass = type(of: self)
             let linuxCount = thisClass.allTests.count
             let darwinCount = Int(thisClass.defaultTestSuite.testCaseCount)
-            
+
             XCTAssertEqual(linuxCount, darwinCount, "\(darwinCount - linuxCount) tests are missing from allTests")
         #endif
     }
-    
+
     static let allTests = [
-        ("testLinuxTestSuiteIncludesAllTests", testLinuxTestSuiteIncludesAllTests),
+        ("testLinuxTestSuiteIncludesAllTests", testLinuxTestSuiteIncludesAllTests)
 //        ("testConfig", testConfig),
 //        ("testMissingFile", testMissingFile),
 //        ("testMissingDestinations", testMissingDestinations),
@@ -150,4 +150,3 @@ extension SwiftyBeaverProviderTests {
 //        ("testLogLevelExtension", testLogLevelExtension)
     ]
 }
-

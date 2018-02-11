@@ -31,16 +31,8 @@ public func configure(
     _ env: inout Environment,
     _ services: inout Services
     ) throws {
-    // configure your application here
-    services.register(Logger.self) { container -> SwiftyBeaverLogger in
-        let dirConfig:DirectoryConfig = try container.make(for: DirectoryConfig.self)
-        // Locate the swiftybeaver.json
-        let data = FileManager.default.contents(atPath: "\(dirConfig.workDir)Config/swiftybeaver.json")!
-        
-        let destinations: [DestinationConfig] = try JSONDecoder().decode([DestinationConfig].self, from: data)
-        
-        return try SwiftyBeaverLogger(configs: destinations)
-    }
+    // Register providers first
+    try services.register(SwiftyBeaverProvider())
 }
 ```
 
@@ -56,54 +48,50 @@ Config/swiftybeaver.json
 
 ```json
 [
-    {
-        "type": "console",
-        "format": " $Dyyyy-MM-dd HH:mm:ss.SSS$d $C$L$c: $M"
-    },
-    {
-        "type": "file"
-    },
-    {
-        "type": "platform",        
-        "app": "YOUR_APP_ID",
-        "secret": "YOUR_SECRET_ID",
-        "key": "YOUR_ENCRYPTION_KEY"
-    }
+  {
+    "type": "console",
+    "format": " $Dyyyy-MM-dd HH:mm:ss.SSS$d $C$L$c: $M"
+  },
+  {
+    "type": "file"
+  },
+  {
+    "type": "platform",
+    "app": "YOUR_APP_ID",
+    "secret": "YOUR_SECRET_ID",
+    "key": "YOUR_ENCRYPTION_KEY"
+  }
 ]
 ```
 
 Aditional options:
 
-| KEY   | AVAILABLE FOR | TYPE | OBSERVATION | 
-|-------|---------------|------|-------------|
-| async | console, file | Bool |             |
-| format | console, file | String | A space must be placed before dollar sign |
-| levelString.debug | console, file | String |   |
-| levelString.error | console, file | String |   |
-| levelString.info | console, file | String |   |
-| levelString.verbose | console, file | String |   |
-| levelString.warning | console, file | String |   |
-| path | file | String | path to the log file |
-| minLevel | console, file, platform | String | values: verbose, debug, info, warning, error |
-| threshold | platform | Int | min: 1, max: 1000 |
+| KEY                 | AVAILABLE FOR           | TYPE   | OBSERVATION                                  |
+| ------------------- | ----------------------- | ------ | -------------------------------------------- |
+| async               | console, file           | Bool   |                                              |
+| format              | console, file           | String | A space must be placed before dollar sign    |
+| levelString.debug   | console, file           | String |                                              |
+| levelString.error   | console, file           | String |                                              |
+| levelString.info    | console, file           | String |                                              |
+| levelString.verbose | console, file           | String |                                              |
+| levelString.warning | console, file           | String |                                              |
+| path                | file                    | String | path to the log file                         |
+| minLevel            | console, file, platform | String | values: verbose, debug, info, warning, error |
+| threshold           | platform                | Int    | min: 1, max: 1000                            |
 
-> Note: 
-\
-It's a good idea to store the SwiftyBeaver configuration file in the Config/secrets folder since it contains sensitive information.
-\
-\
-To get more information about configuration options check the official [SwiftyBeaver docs](https://docs.swiftybeaver.com/)
-
+> Note:
+> \
+> It's a good idea to store the SwiftyBeaver configuration file in the Config/secrets folder since it contains sensitive information.
+> \
+> \
+> To get more information about configuration options check the official [SwiftyBeaver docs](https://docs.swiftybeaver.com/)
 
 ## Use
 
 ```swift
-// Get a logger instance
-let logger: Logger = try app.make(SwiftyBeaverLogger.self)
-
-...
-
 router.get("hello") { req -> Future<String> in
+    // Get a logger instance
+    let logger: Logger = try req.make(SwiftyBeaverLogger.self)
     logger.info("Logger info")
     return Future("Hello, world!")
 }
@@ -123,7 +111,6 @@ Please also see the SwiftyBeaver [destination docs](http://docs.swiftybeaver.com
 
 <img src="https://cloud.githubusercontent.com/assets/564725/18640664/658667ac-7e99-11e6-9267-d7cd168fea47.png" width="802">
 
-
 [Learn more](http://docs.swiftybeaver.com/article/10-log-to-file) about logging to file which is great for Terminal.app fans or to store logs on disk.
 <br/><br/>
 
@@ -136,17 +123,17 @@ Please also see the SwiftyBeaver [destination docs](http://docs.swiftybeaver.com
 
 ## Learn More
 
-- [Website](https://swiftybeaver.com)
-- [SwiftyBeaver Framework](https://github.com/SwiftyBeaver/SwiftyBeaver)
-- [Documentation](http://docs.swiftybeaver.com/)
-- [Medium Blog](https://medium.com/swiftybeaver-blog)
-- [On Twitter](https://twitter.com/SwiftyBeaver)
-
+* [Website](https://swiftybeaver.com)
+* [SwiftyBeaver Framework](https://github.com/SwiftyBeaver/SwiftyBeaver)
+* [Documentation](http://docs.swiftybeaver.com/)
+* [Medium Blog](https://medium.com/swiftybeaver-blog)
+* [On Twitter](https://twitter.com/SwiftyBeaver)
 
 Get support via Github Issues, email and our <b><a href="https://slack.swiftybeaver.com">public Slack channel</a></b>.
 <br/><br/>
 
 ## Credits
+
 This package is developed and maintained by [Gustavo Perdomo](https://github.com/gperdomor) with the collaboration of all vapor community.
 
 ## License
