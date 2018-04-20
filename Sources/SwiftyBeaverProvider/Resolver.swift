@@ -7,54 +7,42 @@
 //
 
 import SwiftyBeaver
-import Vapor
 import Foundation
 
-public enum SBPDestinationType: String {
-    case console
-    case file
-    case platform
-}
-
 public protocol ResolverProtocol {
-    func resolveDestination(of type: SBPDestinationType, using config: JSON) throws -> BaseDestination
-    func resolveConsoleDestination(using config: JSON) throws -> ConsoleDestination
-    func resolveFileDestination(using config: JSON) throws -> FileDestination
-    func resolveSBPlatformDestination(using config: JSON) throws -> SBPlatformDestination
+    func resolve(from config: DestinationConfig) throws -> BaseDestination
+    func resolveConsoleDestination(from config: DestinationConfig) throws -> ConsoleDestination
+    func resolveFileDestination(from config: DestinationConfig) throws -> FileDestination
+    func resolvePlatformDestination(from config: DestinationConfig) throws -> SBPlatformDestination
 }
 
 extension ResolverProtocol {
-    func resolveDestination(of type: SBPDestinationType, using config: JSON) throws -> BaseDestination {
-        let destination: BaseDestination
-
-        switch type {
+    func resolve(from config: DestinationConfig) throws -> BaseDestination {
+        switch config.type {
         case .console:
-            destination = try resolveConsoleDestination(using: config)
+            return try resolveConsoleDestination(from: config)
 
         case .file:
-            destination = try resolveFileDestination(using: config)
+            return try resolveFileDestination(from: config)
 
         case .platform:
-            destination = try resolveSBPlatformDestination(using: config)
-            break
+            return try resolvePlatformDestination(from: config)
         }
-
-        return destination
     }
 }
 
 class Resolver: ResolverProtocol {
-    func resolveConsoleDestination(using config: JSON) throws -> ConsoleDestination {
+    func resolveConsoleDestination(from config: DestinationConfig) throws -> ConsoleDestination {
         let destination = ConsoleDestination()
         return try configureCommonsProperties(destination, using: config)
     }
 
-    func resolveFileDestination(using config: JSON) throws -> FileDestination {
+    func resolveFileDestination(from config: DestinationConfig) throws -> FileDestination {
         let destination = FileDestination()
 
-        if let path = config["path"]?.string {
-            guard !path.trim().isEmpty else {
-                throw ConfigError.unsupported(value: path, key: ["path"], file: CONFIG_FILE_NAME)
+        if let path = config.path {
+            guard !path.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                throw SwiftyBeaverProviderError.missingKey(key: "path")
             }
 
             let file = URL(fileURLWithPath: path)
@@ -64,26 +52,22 @@ class Resolver: ResolverProtocol {
         return try configureCommonsProperties(destination, using: config)
     }
 
-    func resolveSBPlatformDestination(using config: JSON) throws -> SBPlatformDestination {
-        guard let app = config["app"]?.string, !app.trim().isEmpty else {
-            throw ConfigError.missing(key: ["app"], file: CONFIG_FILE_NAME, desiredType: String.self)
+    func resolvePlatformDestination(from config: DestinationConfig) throws -> SBPlatformDestination {
+        guard let app = config.app, !app.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw SwiftyBeaverProviderError.missingKey(key: "app")
         }
 
-        guard let secret = config["secret"]?.string, !secret.trim().isEmpty else {
-            throw ConfigError.missing(key: ["secret"], file: CONFIG_FILE_NAME, desiredType: String.self)
+        guard let secret = config.secret, !secret.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw SwiftyBeaverProviderError.missingKey(key: "secret")
         }
 
-        guard let key = config["key"]?.string, !key.trim().isEmpty else {
-            throw ConfigError.missing(key: ["key"], file: CONFIG_FILE_NAME, desiredType: String.self)
+        guard let key = config.key, !key.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw SwiftyBeaverProviderError.missingKey(key: "key")
         }
 
         let destination = SBPlatformDestination(appID: app, appSecret: secret, encryptionKey: key)
 
-        if let t = config["threshold"] {
-            guard let threshold = t.int else {
-                throw ConfigError.unsupported(value: t.string ?? "-", key: ["threshold"], file: CONFIG_FILE_NAME)
-            }
-
+        if let threshold = config.threshold {
             guard threshold >= 1 && threshold <= 1000  else {
                 throw SwiftyBeaverProviderError.thresholdOutOfRange
             }
@@ -91,71 +75,46 @@ class Resolver: ResolverProtocol {
             destination.sendingPoints.threshold = threshold
         }
 
-        if let minLevel = try getMinLevel(from: config) {
-            destination.minLevel = minLevel
+        if let minLevel = config.minLevel {
+            destination.minLevel = minLevel.sbLevel()
         }
 
         return destination
     }
 
-    func configureCommonsProperties<T>(_ destination: T, using config: JSON) throws -> T where T: BaseDestination {
-        if let format: String = try config.get("format") {
+    func configureCommonsProperties<T>(_ destination: T, using config: DestinationConfig) throws -> T where T: BaseDestination {
+        if let format = config.format {
             destination.format = format
         }
 
-        if let a = config["async"] {
-            guard let async = a.bool else {
-                throw ConfigError.unsupported(value: a.string ?? "-", key: ["async"], file: CONFIG_FILE_NAME)
-            }
-
+        if let async = config.async {
             destination.asynchronously = async
         }
 
-        if let debugString = config["levelString.debug"]?.string {
+        if let debugString = config.levelString?.debug {
             destination.levelString.debug = debugString
         }
 
-        if let errorString = config["levelString.error"]?.string {
+        if let errorString = config.levelString?.error {
             destination.levelString.error = errorString
         }
 
-        if let infoString = config["levelString.info"]?.string {
+        if let infoString = config.levelString?.info {
             destination.levelString.info = infoString
         }
 
-        if let verboseString = config["levelString.verbose"]?.string {
+        if let verboseString = config.levelString?.verbose {
             destination.levelString.verbose = verboseString
         }
 
-        if let warningString = config["levelString.warning"]?.string {
+        if let warningString = config.levelString?.warning {
             destination.levelString.warning = warningString
         }
 
-        if let minLevel = try getMinLevel(from: config) {
-            destination.minLevel = minLevel
+        if let minLevel = config.minLevel {
+            destination.minLevel = minLevel.sbLevel()
         }
 
         return destination
-    }
-
-    func getMinLevel(from config: JSON) throws -> SwiftyBeaver.Level? {
-        if let level = config["minLevel"]?.string?.trim().lowercased() {
-            switch level {
-            case "verbose":
-                return SwiftyBeaver.Level.verbose
-            case "debug":
-                return SwiftyBeaver.Level.debug
-            case "info":
-                return SwiftyBeaver.Level.info
-            case "warning":
-                return SwiftyBeaver.Level.warning
-            case "error":
-                return SwiftyBeaver.Level.error
-            default:
-                throw SwiftyBeaverProviderError.invalidMinLevel
-            }
-        }
-
-        return nil
     }
 }

@@ -1,36 +1,26 @@
 included:
   - Sources
   - Tests
-  
-excluded:
-  - Packages
-  - .build
-  - .vscode
+
+nesting:
+  type_level: 2
 
 opt_in_rules:
+  - closure_end_indentation
   - empty_count
-  - force_unwrapping
   - file_header
+  - force_unwrapping
+  - literal_expression_end_indentation
 
 force_cast: warning
+force_try: warning
 
-force_try:
-  severity: warning # explicitly. Give warning only for force try
-
-type_body_length:
-  warning: 300
-  error: 400
-
-function_body_length:
-  warning: 50
-  error: 80
+line_length: 100
 
 identifier_name:
-  min_length:
-    error: 3
   excluded:
-    - sb
-    
+    - id
+
 file_header:
   required_pattern: |
                     \/\/

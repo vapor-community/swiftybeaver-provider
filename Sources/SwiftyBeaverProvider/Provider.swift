@@ -2,23 +2,36 @@
 //  Provider.swift
 //  SwiftyBeaverProvider
 //
-//  Created by Gustavo Perdomo on 5/2/17.
+//  Created by Gustavo Perdomo on 2/11/18.
 //  Copyright © 2017 Gustavo Perdomo. All rights reserved.
 //
 
+import Service
 import Vapor
-import SwiftyBeaver
+import Foundation
 
-public final class Provider: Vapor.Provider {
+public final class SwiftyBeaverProvider: Provider {
+    /// See Provider.repositoryName
     public static let repositoryName = "swiftybeaver-provider"
 
-    public init(config: Config) throws { }
+    /// Create a new Local provider
+    public init() { }
 
-    public func boot(_ config: Config) throws {
-        config.addConfigurable(log: SwiftyBeaverLogger.init, name: "swiftybeaver")
+    /// See Provider.register
+    public func register(_ services: inout Services) throws {
+        services.register(Logger.self) { container -> SwiftyBeaverLogger in
+            let dirConfig: DirectoryConfig = try container.make(DirectoryConfig.self)
+            // Locate the swiftybeaver.json
+            let data = FileManager.default.contents(atPath: "\(dirConfig.workDir)Config/swiftybeaver.json")!
+
+            let destinations: [DestinationConfig] = try JSONDecoder().decode([DestinationConfig].self, from: data)
+
+            return try SwiftyBeaverLogger(configs: destinations)
+        }
     }
 
-    public func boot(_ drop: Droplet) throws { }
-
-    public func beforeRun(_ drop: Droplet) { }
+    /// See Provider.boot
+    public func didBoot(_ container: Container) throws -> Future<Void> {
+        return .done(on: container)
+    }
 }
