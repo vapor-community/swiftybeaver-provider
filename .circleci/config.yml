@@ -7,7 +7,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install openssl
+          name: Install libressl
           command: brew install libressl
       - run:
           name: Compile code

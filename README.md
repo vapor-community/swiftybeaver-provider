@@ -1,4 +1,4 @@
-[![Swift Version](https://img.shields.io/badge/Swift-4.0-brightgreen.svg)](https://swift.org)
+[![Swift Version](https://img.shields.io/badge/Swift-4.1-brightgreen.svg)](https://swift.org)
 [![Vapor Version](https://img.shields.io/badge/Vapor-3-brightgreen.svg)](https://vapor.codes)
 [![SwiftyBeaver Version](https://img.shields.io/badge/SwiftyBeaver-1.5-brightgreen.svg)](https://github.com/SwiftyBeaver/SwiftyBeaver)
 [![Linux Build Status](https://img.shields.io/circleci/project/github/vapor-community/swiftybeaver-provider.svg)](https://circleci.com/gh/vapor-community/swiftybeaver-provider)
@@ -14,7 +14,7 @@ Adds the powerful logging of [SwiftyBeaver](https://github.com/SwiftyBeaver/Swif
 Add this project to the `Package.swift` dependencies of your Vapor project:
 
 ```swift
-  .package(url: "https://github.com/vapor-community/swiftybeaver-provider.git", .upToNextMajor(from: "3.0.0"))
+  .package(url: "https://github.com/vapor-community/swiftybeaver-provider.git", from: "3.0.0")
 ```
 
 ## Setup
