@@ -28,7 +28,6 @@ extension ResolverProtocol {
         case .platform:
             return try resolvePlatformDestination(from: config)
         }
-
     }
 }
 

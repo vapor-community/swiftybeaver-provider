@@ -1,30 +1,68 @@
 version: 2
 
 jobs:
-  macOS:
+  macos:
     macos:
-      xcode: "9.2"
+      xcode: "9.3.0"
     steps:
       - checkout
-      - run: swift build
-      - run: swift build -c release
-      - run: swift test
-      - run: bash <(curl -s https://codecov.io/bash)
-
-      linux:
+      - run:
+          name: Install openssl
+          command: brew install libressl
+      - run:
+          name: Compile code
+          command: swift build
+      - run: 
+          name: Generate Xcode project
+          command: swift package generate-xcodeproj
+      - run:
+          name: Run unit tests with xcodebuild and coverage
+          command: xcodebuild -scheme SwiftyBeaverProvider-Package -enableCodeCoverage YES test
+      - run:
+          name: Run Codecov tool
+          command: bash <(curl -s https://codecov.io/bash)
+      - run: 
+          name: Compile code with optimizations
+          command: swift build -c release
+  linux:
     docker:
-      - image: norionomura/swift:swift-4.1-branch
+      - image: codevapor/swift:4.1
     steps:
       - checkout
-      - run: apt-get update
-      - run: apt-get install -yq libssl-dev
-      - run: swift build
-      - run: swift build -c release
-      - run: swift test
+      - run: 
+          name: Compile code
+          command: swift build
+      - run: 
+          name: Run unit tests
+          command: swift test
+      - run: 
+          name: Compile code with optimizations
+          command: swift build -c release
+
+  swiftlint:
+    docker:
+      - image: norionomura/swiftlint
+    steps:
+      - checkout
+      - run: swiftlint
 
 workflows:
   version: 2
   tests:
     jobs:
-      # - macos
+      - swiftlint
       - linux
+      - macos
+
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - linux
+      - macos
+      

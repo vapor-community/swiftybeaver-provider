@@ -14,13 +14,13 @@ public final class SwiftyBeaverProvider: Provider {
     /// See Provider.repositoryName
     public static let repositoryName = "swiftybeaver-provider"
 
-    /// Create a new SwiftyBeaver provider.
+    /// Create a new Local provider
     public init() { }
 
     /// See Provider.register
     public func register(_ services: inout Services) throws {
-        services.register([], tag: "swiftybeaver", isSingleton: true) { container -> SwiftyBeaverLogger in
-            let dirConfig: DirectoryConfig = try container.make(for: DirectoryConfig.self)
+        services.register(Logger.self) { container -> SwiftyBeaverLogger in
+            let dirConfig: DirectoryConfig = try container.make(DirectoryConfig.self)
             // Locate the swiftybeaver.json
             let data = FileManager.default.contents(atPath: "\(dirConfig.workDir)Config/swiftybeaver.json")!
 
@@ -31,5 +31,7 @@ public final class SwiftyBeaverProvider: Provider {
     }
 
     /// See Provider.boot
-    public func boot(_ container: Container) throws {}
+    public func didBoot(_ container: Container) throws -> Future<Void> {
+        return .done(on: container)
+    }
 }

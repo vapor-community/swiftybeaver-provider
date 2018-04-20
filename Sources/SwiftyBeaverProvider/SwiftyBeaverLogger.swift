@@ -36,7 +36,7 @@ public final class SwiftyBeaverLogger: Logger {
         var destinations = [BaseDestination]()
 
         for config in configs {
-            let destination = try SwiftyBeaverLogger.resolver.resolve(from:config)
+            let destination = try SwiftyBeaverLogger.resolver.resolve(from: config)
 
             destinations.append(destination)
         }

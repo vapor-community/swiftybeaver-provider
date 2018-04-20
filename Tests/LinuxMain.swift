@@ -6,14 +6,10 @@
 //  Copyright © 2017 Gustavo Perdomo. All rights reserved.
 //
 
-#if os(Linux)
-
 import XCTest
-@testable import SwiftyBeaverProviderTests
 
-XCTMain([
-    testCase(SwiftyBeaverProviderTests.allTests),
-    testCase(ResolverTests.allTests)
-])
+import SwiftyBeaverProviderTests
 
-#endif
+var tests = [XCTestCaseEntry]()
+tests += SwiftyBeaverProviderTests.allTests()
+XCTMain(tests)
