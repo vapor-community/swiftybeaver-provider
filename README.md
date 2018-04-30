@@ -33,6 +33,9 @@ public func configure(
     ) throws {
     // Register providers first
     try services.register(SwiftyBeaverProvider())
+
+    // Optional
+    config.prefer(SwiftyBeaverLogger.self, for: Logger.self)
 }
 ```
 
@@ -92,6 +95,10 @@ Aditional options:
 router.get("hello") { req -> Future<String> in
     // Get a logger instance
     let logger: Logger = try req.make(SwiftyBeaverLogger.self)
+
+    // Or
+    let logger: Logger = try req.make(Logger.self) // needs config.prefer(SwiftyBeaverLogger.self, for: Logger.self) in configure.swift
+
     logger.info("Logger info")
     return Future("Hello, world!")
 }
