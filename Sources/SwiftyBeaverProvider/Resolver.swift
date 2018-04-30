@@ -65,7 +65,11 @@ class Resolver: ResolverProtocol {
             throw SwiftyBeaverProviderError.missingKey(key: "key")
         }
 
-        let destination = SBPlatformDestination(appID: app, appSecret: secret, encryptionKey: key)
+        let destination = SBPlatformDestination(appID: app, appSecret: secret, encryptionKey: key, serverURL: config.serverURL)
+
+        if let analyticsUserName = config.analyticsUserName {
+            destination.analyticsUserName = analyticsUserName
+        }
 
         if let threshold = config.threshold {
             guard threshold >= 1 && threshold <= 1000  else {

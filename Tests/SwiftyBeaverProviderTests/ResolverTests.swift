@@ -6,6 +6,7 @@
 //  Copyright © 2017 Gustavo Perdomo. All rights reserved.
 //
 
+import Foundation
 import XCTest
 @testable import SwiftyBeaverProvider
 
@@ -50,7 +51,7 @@ final class ResolverTests: XCTestCase {
     }
 
     func testResolvePlatformDestination() throws {
-        let config = DestinationConfig(app: "APP_ID", secret: "SECRET_ID", key: "ENCRYPTION_KEY", threshold: 500, minLevel: .info)
+        let config = DestinationConfig(app: "APP_ID", secret: "SECRET_ID", key: "ENCRYPTION_KEY", threshold: 500, minLevel: .info, serverURL: URL(string: "https://google.com"), analyticsUserName: "custom-user")
 
         let platform = try resolver.resolvePlatformDestination(from: config)
 
@@ -61,6 +62,8 @@ final class ResolverTests: XCTestCase {
         XCTAssertEqual(platform.encryptionKey, "ENCRYPTION_KEY")
 
         XCTAssertEqual(platform.sendingPoints.threshold, 500)
+        XCTAssertEqual(platform.serverURL?.absoluteString, "https://google.com")
+        XCTAssertEqual(platform.analyticsUserName, "custom-user")
 
         XCTAssertEqual(platform.minLevel, .info)
     }

@@ -6,6 +6,8 @@
 //  Copyright © 2017 Gustavo Perdomo. All rights reserved.
 //
 
+import Foundation
+
 enum DestinationType: String, Codable {
     case console
     case file
@@ -38,6 +40,9 @@ public struct DestinationConfig: Codable {
     private(set) var key: String?
     private(set) var threshold: Int?
 
+    private(set) var serverURL: URL?
+    private(set) var analyticsUserName: String?
+
     init(type: DestinationType, async: Bool? = nil, format: String? = nil, minLevel: DestinationLevel? = nil, levelString: LevelString? = nil) {
 
         self.type = type
@@ -64,6 +69,17 @@ public struct DestinationConfig: Codable {
         self.key = key
         self.threshold = threshold
         self.minLevel = minLevel
+    }
+
+    init(app: String?  = nil, secret: String? = nil, key: String? = nil, threshold: Int? = nil, minLevel: DestinationLevel? = nil, serverURL: URL? = nil, analyticsUserName: String? = nil) {
+        self.type = .platform
+        self.app = app
+        self.secret = secret
+        self.key = key
+        self.threshold = threshold
+        self.minLevel = minLevel
+        self.serverURL = serverURL
+        self.analyticsUserName = analyticsUserName
     }
 }
 
