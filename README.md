@@ -21,16 +21,40 @@ Add this project to the `Package.swift` dependencies of your Vapor project:
 
 After you've added the SwiftyBeaver Provider package to your project, setting the provider up in code is easy.
 
-### Service registration
+You can configure your SwiftyBeaver instance in a pure swift way or using a JSON file like Vapor 2 do,
 
-First, register the SwiftyBeaverProvider in your `configure.swift' file.
+### Register using a pure swift way
 
 ```swift
-public func configure(
-    _ config: inout Config,
-    _ env: inout Environment,
-    _ services: inout Services
-    ) throws {
+import SwiftBeaverProvider
+
+public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services ) throws {
+    // ...
+
+    // Setup your destinations
+    let console = ConsoleDestination()
+    console.minLevel = .info // update properties according to your needs
+
+    let fileDestination = FileDestination()
+
+    // Register the logger
+    services.register(SwiftyBeaverLogger(destinations: [console, fileDestination]), as: Logger.self)
+
+    // Optional
+    config.prefer(SwiftyBeaverLogger.self, for: Logger.self)
+}
+```
+
+### Register using a JSON file
+
+First, register the SwiftyBeaverProvider in your `configure.swift` file.
+
+```swift
+import SwiftBeaverProvider
+
+public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services ) throws {
+    // ...
+
     // Register providers first
     try services.register(SwiftyBeaverProvider())
 
@@ -39,15 +63,11 @@ public func configure(
 }
 ```
 
-### Configure Destinations
+#### Configure Destinations
 
 If you run your application now, you will likely see an error that the SwiftyBeaver configuration file is missing. Let's add that now
 
-#### Basic
-
-The configuration consist of an array of destinations. Here is an example of a simple SwiftyBeaver configuration file to configure console, file and swiftybeaver platform destinations with their required properties.
-
-Config/swiftybeaver.json
+The configuration consist of an array of destinations located in `Config/swiftybeaver.json` file. Here is an example of a simple SwiftyBeaver configuration file to configure console, file and swiftybeaver platform destinations with their required properties.
 
 ```json
 [
