@@ -1,6 +1,6 @@
 [![Swift Version](https://img.shields.io/badge/Swift-4.1-brightgreen.svg)](https://swift.org)
 [![Vapor Version](https://img.shields.io/badge/Vapor-3-brightgreen.svg)](https://vapor.codes)
-[![SwiftyBeaver Version](https://img.shields.io/badge/SwiftyBeaver-1.5-brightgreen.svg)](https://github.com/SwiftyBeaver/SwiftyBeaver)
+[![SwiftyBeaver Version](https://img.shields.io/badge/SwiftyBeaver-1.6-brightgreen.svg)](https://github.com/SwiftyBeaver/SwiftyBeaver)
 [![Linux Build Status](https://img.shields.io/circleci/project/github/vapor-community/swiftybeaver-provider.svg)](https://circleci.com/gh/vapor-community/swiftybeaver-provider)
 [![codecov](https://codecov.io/gh/vapor-community/swiftybeaver-provider/branch/master/graph/badge.svg)](https://codecov.io/gh/vapor-community/swiftybeaver-provider)
 [![GitHub license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
@@ -150,11 +150,11 @@ Please also see the SwiftyBeaver [destination docs](http://docs.swiftybeaver.com
 
 ## Learn More
 
-* [Website](https://swiftybeaver.com)
-* [SwiftyBeaver Framework](https://github.com/SwiftyBeaver/SwiftyBeaver)
-* [Documentation](http://docs.swiftybeaver.com/)
-* [Medium Blog](https://medium.com/swiftybeaver-blog)
-* [On Twitter](https://twitter.com/SwiftyBeaver)
+- [Website](https://swiftybeaver.com)
+- [SwiftyBeaver Framework](https://github.com/SwiftyBeaver/SwiftyBeaver)
+- [Documentation](http://docs.swiftybeaver.com/)
+- [Medium Blog](https://medium.com/swiftybeaver-blog)
+- [On Twitter](https://twitter.com/SwiftyBeaver)
 
 Get support via Github Issues, email and our <b><a href="https://slack.swiftybeaver.com">public Slack channel</a></b>.
 <br/><br/>
